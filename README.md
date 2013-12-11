@@ -1,5 +1,6 @@
 ct_webcam_rtspd
 ===============
+thanks for Enrico Butera ebutera@users.berlios.de .
 
 a rtspd of webcam on cubieboard.
 

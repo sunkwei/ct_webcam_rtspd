@@ -96,6 +96,8 @@ static GrabThread *_thread = 0;
 static capture_t *_cap = 0;
 
 //////// 
+//#define DUMP_YUV420P
+
 static void yuyv_yuv420p(const unsigned char *p, unsigned char *q, int width, int height)
 {
 	unsigned char *Y = q;
@@ -120,6 +122,22 @@ static void yuyv_yuv420p(const unsigned char *p, unsigned char *q, int width, in
 			p++;		// 跳过 V
 		}
 	}
+
+#ifdef DUMP_YUV420P
+	// 使用 ffmpeg -s <width>x<height> -pix_fmt yuv420p -i img-xx.yuv img-xx.jpg
+	// 然后检查 img-xx.jpg 是否正确？
+#define CNT 10
+	static int _ind = 0;
+	char fname[128];
+	snprintf(fname, sizeof(fname), "img-%02d.yuv", _ind);
+	_ind++;
+	_ind %= CNT;
+	FILE *fp = fopen(fname, "wb");
+	if (fp) {
+		fwrite(q, 1, width*height*3/2, fp);
+		fclose(fp);
+	}
+#endif // 
 }
 
 static slice_t *slice_alloc(const void *data, int len, int64_t pts)

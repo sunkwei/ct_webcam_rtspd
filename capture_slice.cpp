@@ -126,6 +126,7 @@ static void yuyv_yuv420p(const unsigned char *p, unsigned char *q, int width, in
 #ifdef DUMP_YUV420P
 	// 使用 ffmpeg -s <width>x<height> -pix_fmt yuv420p -i img-xx.yuv img-xx.jpg
 	// 然后检查 img-xx.jpg 是否正确？
+	// 经过检查，此处 yuv420p 图像正常，这么说，肯定是 GetFrmBufCB() 里面设置问题了 :(
 #define CNT 10
 	static int _ind = 0;
 	char fname[128];
@@ -208,6 +209,9 @@ static __s32 GetFrmBufCB(__s32 uParam1,  void *pFrmBufInfo)
 
 	int width = _cap->width_, height = _cap->height_;
 
+	// FIXME: 貌似输入的 yuv420p 是正确的，但经过压缩输出的看起来不对，
+	//	  Y 数据正常：把 u,v 数据都置为 0x80，看到正确的黑白图像了；
+	//	  加上 u/v 分量，色彩不对！
 	encBuf.addrY = (unsigned char*)Buf.addrPhyY;
 	encBuf.addrCb = (unsigned char*)Buf.addrPhyY + width * height;
 	encBuf.addrCr = (unsigned char*)Buf.addrPhyY + width * height * 5 / 4;
